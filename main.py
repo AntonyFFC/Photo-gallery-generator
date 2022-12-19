@@ -1,6 +1,8 @@
 from unsplash.api import Api
 from unsplash.auth import Auth
 from PIL import Image, ImageFilter
+from gallery import Gallery
+
 
 im = Image.open('/home/antek/Pictures/Screenshot from 2022-11-09 14-04-45.png')
 
