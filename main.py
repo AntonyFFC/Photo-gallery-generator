@@ -7,11 +7,16 @@ import requests
 import photos
 
 
-pic = photos.getPhotoWithID('04X1Yp9hNH8')
+def main():
+    pic = photos.getPhotoWithID('04X1Yp9hNH8')
 
-image = requests.get(pic.getContents("small"))
+    image = requests.get(pic.getContents("small"))
 
-imageData = image.content
+    imageData = image.content
 
-im = Image.open(BytesIO(imageData))
-im.show()
+    im = Image.open(BytesIO(imageData))
+    im.show()
+
+
+if __name__ == "__main__":
+    main()
