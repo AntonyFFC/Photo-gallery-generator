@@ -29,23 +29,23 @@ def getPhotoWithID(id):
 
 
 def getPhotoWithTopic(topic):
-    MatchPhot = []
+    MatchPhotID = []
     similarVals = []
     laps = 0
-    while len(MatchPhot) < 5 and laps <= 20:
+    while len(MatchPhotID) < 5 and laps <= 10:
         laps += 1
-        phots = getPhotos(laps, 30)
+        phots = getPhotos(laps+randint(0, 20), 30)
         for photo in phots:
             phot = getPhotoWithID(photo.id)
             check, similarVal = checkIfSynonym(phot, topic)
             if check:
-                MatchPhot.append(phot)
+                MatchPhotID.append(phot.id)
                 similarVals.append(similarVal)
-    if MatchPhot != []:
-        sortSimVals, sortPhot = list(zip(*sorted(zip(similarVals, MatchPhot))))
+    if MatchPhotID != []:
+        sortSimVals, sortPhotID = list(zip(*sorted(zip(similarVals, MatchPhotID))))
     else:
-        sortSimVals, sortPhot = [], []
-    return sortSimVals, sortPhot
+        sortSimVals, sortPhotID = [], []
+    return sortSimVals, sortPhotID
 
 
 def checkIfSynonym(photo, givenTheme):
@@ -206,6 +206,8 @@ def checker(data):
     return True
 
 
-simValues, phots = getPhotoWithTopic("nature")
-for i, phot in enumerate(phots):
-    print(f"{phot.tags_preview[0]}: {simValues[i]}")
+if __name__ == "__main__":
+    simValues, photsIDs = getPhotoWithTopic("nature")
+    for i, photID in enumerate(photsIDs):
+        phot = getPhotoWithID(photID)
+        print(f"{phot.tags_preview[0]}: {simValues[i]}")
