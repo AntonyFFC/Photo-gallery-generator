@@ -1,4 +1,7 @@
 import requests
+from random import randint
+from nltk.corpus import wordnet
+from nltk.stem import WordNetLemmatizer
 
 
 class NoDataError(Exception):
@@ -11,8 +14,8 @@ class WrongCategoryError(Exception):
         super().__init__("The given category is not possible")
 
 
-def getPhotos():
-    imagesData = requests.get("https://api.unsplash.com/photos/?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0").json()
+def getPhotos(page=1, per_page=10):
+    imagesData = requests.get(f"https://api.unsplash.com/photos/?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0&page={page}&per_page={per_page}").json()
     allImages = []
     for imageData in imagesData:
         image = Photo(imageData)
@@ -25,7 +28,75 @@ def getPhotoWithID(id):
     return Photo(imageData)
 
 
+def getPhotoWithTopic(topic):
+    MatchPhot = []
+    similarVals = []
+    laps = 0
+    while len(MatchPhot) < 5 and laps <= 20:
+        laps += 1
+        phots = getPhotos(laps, 30)
+        for photo in phots:
+            phot = getPhotoWithID(photo.id)
+            check, similarVal = checkIfSynonym(phot, topic)
+            if check:
+                MatchPhot.append(phot)
+                similarVals.append(similarVal)
+    if MatchPhot != []:
+        sortSimVals, sortPhot = list(zip(*sorted(zip(similarVals, MatchPhot))))
+    else:
+        sortSimVals, sortPhot = [], []
+    return sortSimVals, sortPhot
+
+
+def checkIfSynonym(photo, givenTheme):
+    lemmatizer = WordNetLemmatizer()
+    givenThemeSynonyms = wordnet.synsets(givenTheme)
+    categories = ['n', 'v', 'a', 'r', 's']
+
+    tags = photo.tags_preview
+
+    if not givenThemeSynonyms:
+        for tag in tags:
+            if tag.lower() == givenTheme.lower():
+                return True, 0.9
+        return False, 0
+
+    for tag in tags:
+        tag = tag.lower()
+        for synset in givenThemeSynonyms:
+            themeSynsets = wordnet.synsets(tag)
+            for themeSynset in themeSynsets:
+                if themeSynset.wup_similarity(synset) > 0.79:
+                    return True, themeSynset.wup_similarity(synset)
+        for categ in categories:
+            givenLemmatized = lemmatizer.lemmatize(givenTheme.lower(), pos=categ)
+            tagLemmatized = lemmatizer.lemmatize(tag, pos=categ)
+            if givenLemmatized == tagLemmatized:
+                return True, 0.8
+    return False, 0
+
+
 class Photo:
+    """
+    Class Photo. Contains attributes:
+    :param data: Photos' data
+    :type name: JSON
+
+    :param id: Photos' id
+    :type name: str
+
+    :param dimensions: Photos' dimensions
+    :type name: tuple
+
+    :param likes: Photos' number of likes
+    :type name: int
+
+    :param description: Photos' description
+    :type name: str
+
+    :param alt_description: Photos' alternative description
+    :type name: str
+    """
     def __init__(self, data):
         if checker(data):
             self._data = data
@@ -86,6 +157,22 @@ class Photo:
             raise WrongCategoryError()
         return self._data["urls"][category]
 
+    @property
+    def tags(self):
+        tags = [tag['title'] for tag in self._data['tags']]
+        return tags
+
+    @property
+    def tags_preview(self):
+        tagsPreview = [tag['title'] for tag in self._data['tags_preview']]
+        return tagsPreview
+
+    def savePhoto(self, path):
+        pass
+
+    def effect(self, effect):
+        pass
+
 
 def checker(data):
     if not data:
@@ -107,7 +194,8 @@ def checker(data):
     if data['likes'] < 0:
         raise ValueError("Likes Cannot be negative")
 
-    if not isinstance(data['description'], str):
+    desc = data['description']
+    if not isinstance(desc, str) and desc is not None:
         raise TypeError("Description Must be a string")
 
     categories = ['raw', 'full', 'regular', 'small', 'thumb']
@@ -116,3 +204,8 @@ def checker(data):
             raise TypeError("The contents must be strings")
 
     return True
+
+
+simValues, phots = getPhotoWithTopic("nature")
+for i, phot in enumerate(phots):
+    print(f"{phot.tags_preview[0]}: {simValues[i]}")
