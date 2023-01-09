@@ -65,7 +65,8 @@ def getaPhotoFromCollection(collectionID, number):
     return pictures
 
 
-simValues, collIDs = getCollectionsWithTopic("happy")
-for i, collID in enumerate(collIDs):
-    coll = getCollectionWithID(collID)
-    print(f"{coll['title']}: {simValues[i]}")
+# if __name__ == "__main__":
+#     simValues, collIDs = getCollectionsWithTopic("happy")
+#     for i, collID in enumerate(collIDs):
+#         coll = getCollectionWithID(collID)
+#         print(f"{coll['title']}: {simValues[i]}")

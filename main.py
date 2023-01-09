@@ -48,7 +48,50 @@ def printMenu():
 
 
 def GenerateNewGall():
-    print("Generator")
+    generateFunctions = {
+        '1': GenerateLight,
+        '2': Generate,
+    }
+
+    print(Style.BRIGHT + "\nChoose One")
+    menuItems = [
+        [Fore.BLUE + Style.BRIGHT + "'1'" + Style.RESET_ALL,
+         Style.BRIGHT + "Generate photogallery using only a few photo requests (less precise)"],
+        [Fore.BLUE + Style.BRIGHT + "'2'" + Style.RESET_ALL,
+         Style.BRIGHT + "Generate photogallery using only a lot of photo requests (more precise)" + Style.RESET_ALL],
+    ]
+    print(tabulate(menuItems, headers=["Option", "Description"]))
+    ans = input()
+    try:
+        generateFunctions[ans]()
+    except KeyError:
+        print("Invalid input")
+
+
+def GenerateLight():
+    print(Style.BRIGHT + "\nAfter each picture there will be a question if you want to add it to the gallery or not")
+    print(Style.BRIGHT + "Give a theme for the photos (for example: 'nature', 'city', 'water')")
+    theme = input()
+    simValues, photsIDs = photos.getPhotoWithTopicLight(theme)
+    for i, photID in enumerate(photsIDs):
+        phot = photos.getPhotoWithID(photID)
+        image = requests.get(phot.getContents("small"))
+        imageData = image.content
+        im = Image.open(BytesIO(imageData))
+        im.show()
+
+
+def Generate():
+    print(Style.BRIGHT + "\nAfter each picture there will be a question if you want to add it to the gallery or not")
+    print(Style.BRIGHT + "Give a theme for the photos (for example: 'nature', 'city', 'water')")
+    theme = input()
+    simValues, photsIDs = photos.getPhotoWithTopic(theme)
+    for i, photID in enumerate(photsIDs):
+        phot = photos.getPhotoWithID(photID)
+        image = requests.get(phot.getContents("small"))
+        imageData = image.content
+        im = Image.open(BytesIO(imageData))
+        im.show()
 
 
 def OpenGall():
