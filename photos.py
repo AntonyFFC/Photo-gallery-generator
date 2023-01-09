@@ -2,6 +2,9 @@ import requests
 from random import randint
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
+import nltk
+nltk.download('wordnet')
+import re
 
 
 class NoDataError(Exception):
@@ -48,12 +51,40 @@ def getPhotoWithTopic(topic):
     return sortSimVals, sortPhotID
 
 
-def checkIfSynonym(photo, givenTheme):
+def getPhotoWithTopicLight(topic):
+    MatchPhotID = []
+    similarVals = []
+    laps = 0
+    while len(MatchPhotID) < 5 and laps <= 8:
+        laps += 1
+        phots = getPhotos(laps+randint(0, 20), 30)
+        for photo in phots:
+            if photo.description is None:
+                if photo.alt_description is None:
+                    continue
+                check, similarVal = checkIfSynonym(photo.alt_description, topic)
+            else:
+                check, similarVal = checkIfSynonym(photo.description, topic)
+            if check:
+                MatchPhotID.append(photo.id)
+                similarVals.append(similarVal)
+    if MatchPhotID != []:
+        sortSimVals, sortPhotID = list(zip(*sorted(zip(similarVals, MatchPhotID))))
+    else:
+        sortSimVals, sortPhotID = [], []
+    return sortSimVals, sortPhotID
+
+
+def checkIfSynonym(input, givenTheme):
     lemmatizer = WordNetLemmatizer()
     givenThemeSynonyms = wordnet.synsets(givenTheme)
     categories = ['n', 'v', 'a', 'r', 's']
-
-    tags = photo.tags_preview
+    if isinstance(input, Photo):
+        tags = input.tags_preview
+    elif isinstance(input, str):
+        tags = re.split(r'[-\s]', input)
+    else:
+        raise TypeError("The input must be either a Photo or a string")
 
     if not givenThemeSynonyms:
         for tag in tags:
@@ -207,7 +238,7 @@ def checker(data):
 
 
 if __name__ == "__main__":
-    simValues, photsIDs = getPhotoWithTopic("nature")
+    simValues, photsIDs = getPhotoWithTopicLight("nature")
     for i, photID in enumerate(photsIDs):
         phot = getPhotoWithID(photID)
         print(f"{phot.tags_preview[0]}: {simValues[i]}")
