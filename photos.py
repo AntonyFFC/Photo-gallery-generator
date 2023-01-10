@@ -3,8 +3,9 @@ from random import randint
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 import nltk
-nltk.download('wordnet')
 import re
+nltk.download('wordnet')
+
 
 
 class NoDataError(Exception):
@@ -37,7 +38,7 @@ def getPhotoWithTopic(topic):
     laps = 0
     while len(MatchPhotID) < 5 and laps <= 10:
         laps += 1
-        phots = getPhotos(laps+randint(0, 20), 30)
+        phots = getPhotos(laps+randint(0, 500), 30)
         for photo in phots:
             phot = getPhotoWithID(photo.id)
             check, similarVal = checkIfSynonym(phot, topic)
@@ -55,9 +56,9 @@ def getPhotoWithTopicLight(topic):
     MatchPhotID = []
     similarVals = []
     laps = 0
-    while len(MatchPhotID) < 5 and laps <= 8:
+    while len(MatchPhotID) < 5 and laps <= 10:
         laps += 1
-        phots = getPhotos(laps+randint(0, 20), 30)
+        phots = getPhotos(laps+randint(0, 500), 30)
         for photo in phots:
             if photo.description is None:
                 if photo.alt_description is None:
@@ -209,7 +210,7 @@ def checker(data):
     if not data:
         raise NoDataError()
     if not isinstance(data, dict):
-        raise ValueError("Data must be JSON")
+        raise ValueError("Data must be JSON \nthis usually means that unsplash blocked your IP adress")
 
     if not isinstance(data['id'], str):
         raise TypeError("id has to be a string")

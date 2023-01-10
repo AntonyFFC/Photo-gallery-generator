@@ -1,5 +1,3 @@
-from unsplash.api import Api
-from unsplash.auth import Auth
 from PIL import Image, ImageFilter
 from gallery import Gallery
 from io import BytesIO
@@ -9,6 +7,11 @@ from tabulate import tabulate
 from colorama import Fore, Style
 
 
+class invalidInputError(Exception):
+    def __init__(self):
+        super().__init__("The given input is invalid")
+
+
 def main():
     printMenu()
     ans = input()
@@ -16,14 +19,6 @@ def main():
         functions[ans]()
     except KeyError:
         print("Invalid input")
-    # pic = photos.getPhotoWithID('04X1Yp9hNH8')
-
-    # image = requests.get(pic.getContents("small"))
-
-    # imageData = image.content
-
-    # im = Image.open(BytesIO(imageData))
-    # im.show()
 
 
 def printMenu():
@@ -64,26 +59,38 @@ def GenerateNewGall():
     ans = input()
     try:
         generateFunctions[ans]()
-    except KeyError:
-        print("Invalid input")
+    except invalidInputError as e:
+        raise e("Invalid input")
 
 
 def GenerateLight():
     print(Style.BRIGHT + "\nAfter each picture there will be a question if you want to add it to the gallery or not")
-    print(Style.BRIGHT + "Give a theme for the photos (for example: 'nature', 'city', 'water')")
+    print(Style.BRIGHT + "Give a theme for the photos (for example: 'nature', 'city', 'water' etc.)")
     theme = input()
+    thisGallery = Gallery([], theme)
     simValues, photsIDs = photos.getPhotoWithTopicLight(theme)
-    for i, photID in enumerate(photsIDs):
+
+    for i, photID in enumerate(reversed(photsIDs[-3:])):
         phot = photos.getPhotoWithID(photID)
         image = requests.get(phot.getContents("small"))
         imageData = image.content
         im = Image.open(BytesIO(imageData))
         im.show()
 
+        print(Style.BRIGHT + "Do you want to add this picture to this gallery? ('Y'-yes 'N'-no)")
+        ans = input()
+        if ans.lower() == 'n':
+            continue
+        elif ans.lower() == 'y':
+            thisGallery.addPict(phot)
+        else:
+            raise invalidInputError()
+    thisGallery.saveGallery()
+
 
 def Generate():
     print(Style.BRIGHT + "\nAfter each picture there will be a question if you want to add it to the gallery or not")
-    print(Style.BRIGHT + "Give a theme for the photos (for example: 'nature', 'city', 'water')")
+    print(Style.BRIGHT + "Give a theme for the photos (for example: 'nature', 'city', 'water' etc.)")
     theme = input()
     simValues, photsIDs = photos.getPhotoWithTopic(theme)
     for i, photID in enumerate(photsIDs):
