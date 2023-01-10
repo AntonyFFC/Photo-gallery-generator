@@ -108,7 +108,7 @@ class Gallery():
 
         for y in range(rows):
             for x in range(cols):
-                image = requests.get(pics[x+y].getContents("small"))
+                image = requests.get(pics[x+y].getContents("full"))
                 imageData = image.content
                 im = Image.open(BytesIO(imageData))
                 collage.paste(im, (x*boxWidth, y*boxHeight))
@@ -121,23 +121,3 @@ class Gallery():
             im = Image.open(BytesIO(imageData))
 
             im.save(f'{self._path}{self.title}/picture{i}.jpg')
-
-
-# # URLs of the images
-# image_urls = [
-#     "https://images.unsplash.com/photo-1661956601031-4cf09efadfce?ixid=MnwzOTAyMjZ8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3MzI5NDQ5Mw&ixlib=rb-4.0.3",
-#     "https://images.unsplash.com/photo-1661956601031-4cf09efadfce?ixid=MnwzOTAyMjZ8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3MzI5NDQ5Mw&ixlib=rb-4.0.3",
-#     "https://images.unsplash.com/photo-1661956601031-4cf09efadfce?ixid=MnwzOTAyMjZ8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3MzI5NDQ5Mw&ixlib=rb-4.0.3",
-# ]
-
-# # Create a new image with the size of the first image
-# collage = Image.new("RGB", (1000,8000))
-
-# #  download the images from url and paste in collage
-# for i, image_url in enumerate(image_urls):
-#     image_data = requests.get(image_url).content
-#     image = Image.open(BytesIO(image_data))
-#     collage.paste(image, (i * image.width, 0))
-
-# # Save the collage
-# collage.save("collage.jpg")

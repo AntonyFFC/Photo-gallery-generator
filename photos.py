@@ -7,6 +7,10 @@ import re
 nltk.download('wordnet')
 
 
+class rateLimitReachedError(Exception):
+    def __init__(self):
+        super().__init__("Reqest rate limit reached")
+
 
 class NoDataError(Exception):
     def __init__(self):
@@ -19,7 +23,10 @@ class WrongCategoryError(Exception):
 
 
 def getPhotos(page=1, per_page=10):
-    imagesData = requests.get(f"https://api.unsplash.com/photos/?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0&page={page}&per_page={per_page}").json()
+    try:
+        imagesData = requests.get(f"https://api.unsplash.com/photos/?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0&page={page}&per_page={per_page}").json()
+    except:
+        raise rateLimitReachedError()
     allImages = []
     for imageData in imagesData:
         image = Photo(imageData)
@@ -28,7 +35,10 @@ def getPhotos(page=1, per_page=10):
 
 
 def getPhotoWithID(id):
-    imageData = requests.get(f"https://api.unsplash.com/photos/{id}?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0").json()
+    try:
+        imageData = requests.get(f"https://api.unsplash.com/photos/{id}?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0").json()
+    except:
+        raise rateLimitReachedError()
     return Photo(imageData)
 
 
