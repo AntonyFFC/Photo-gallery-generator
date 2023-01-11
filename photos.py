@@ -5,8 +5,15 @@ from nltk.stem import WordNetLemmatizer
 import nltk
 import re
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageFilter
+from colorama import Fore, Style
+from tabulate import tabulate
 nltk.download('wordnet')
+
+
+class invalidInputError(Exception):
+    def __init__(self):
+        super().__init__("The given input is invalid")
 
 
 class rateLimitReachedError(Exception):
@@ -48,7 +55,7 @@ def getPhotoWithTopic(topic):
     MatchPhotID = []
     similarVals = []
     laps = 0
-    while len(MatchPhotID) < 5 and laps <= 10:
+    while len(MatchPhotID) < 5 and laps <= 12:
         laps += 1
         phots = getPhotos(laps+randint(0, 500), 30)
         for photo in phots:
@@ -68,7 +75,7 @@ def getPhotoWithTopicLight(topic):
     MatchPhotID = []
     similarVals = []
     laps = 0
-    while len(MatchPhotID) < 5 and laps <= 10:
+    while len(MatchPhotID) < 5 and laps <= 12:
         laps += 1
         phots = getPhotos(laps+randint(0, 500), 30)
         for photo in phots:
@@ -212,14 +219,52 @@ class Photo:
         return tagsPreview
 
     def savePhoto(self, gallery):
-        image = requests.get(self.getContents("full"))
-        imageData = image.content
-        im = Image.open(BytesIO(imageData))
+        im = self.getImageForm("full")
 
         im.save(f'{gallery.path}{gallery.title}/{self.id}.jpg')
 
+    def getImageForm(self, category):
+        image = requests.get(self.getContents(category))
+        imageData = image.content
+        return Image.open(BytesIO(imageData))
+
     def effect(self, effect):
-        pass
+        """
+        Makes the chosen effect on the photo.
+        The possible effects are:
+        'blur', 'gaussian blur', 'sharpen', 'smooth' and 'flip'
+        """
+        pic = self.getImageForm('full')
+        effectFunctions = {
+            'blur': ImageFilter.BLUR,
+            'gaussian blur': ImageFilter.GaussianBlur(radius=2),
+            'sharpen': ImageFilter.SHARPEN,
+            'smooth': ImageFilter.SMOOTH,
+        }
+        try:
+            if effect == 'flip':
+                return self.flip()
+            else:
+                return pic.filter(effectFunctions[effect])
+        except invalidInputError:
+            raise invalidInputError("Invalid input")
+
+    def flip(self):
+        pic = self.getImageForm('full')
+        print(Style.BRIGHT + "\nChoose one:")
+        flipItems = [
+            [Fore.BLUE + Style.BRIGHT + "'1'" + Style.RESET_ALL,
+             Style.BRIGHT + "Flip the image from left to right"],
+            [Fore.BLUE + Style.BRIGHT + "'2'" + Style.RESET_ALL,
+             Style.BRIGHT + "Flip the image from top to bottom"
+             + Style.RESET_ALL],
+        ]
+        print(tabulate(flipItems, headers=["Option", "Description"]))
+        ans = int(input())
+        try:
+            return pic.transpose(ans-1)
+        except invalidInputError:
+            raise invalidInputError()
 
 
 def checker(data):

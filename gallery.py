@@ -3,12 +3,12 @@ import photos
 import os
 import requests
 from io import BytesIO
-import math
 
 
 class IDNotFoundError(Exception):
     def __init__(self):
         super().__init__("No such id in gallery")
+
 
 class InvalidPicValueError(Exception):
     def __init__(self):
@@ -34,8 +34,8 @@ class Gallery():
             raise TypeError("The title must be a string")
         self._title = title
         if self._path != "":
-            newpath = f'{self._path}/'
-        os.makedirs(f'{newpath}{self._title}', exist_ok=True)
+            self._path = f'{self._path}/'
+        os.makedirs(f'{self._path}{self._title}', exist_ok=True)
         for picture in pictures:
             if type(picture) != photos.Photo:
                 raise TypeError("The type must be 'Photos'")

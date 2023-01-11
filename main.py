@@ -1,7 +1,5 @@
-from PIL import Image, ImageFilter
+from PIL import Image
 from gallery import Gallery
-from io import BytesIO
-import requests
 import photos
 from tabulate import tabulate
 from colorama import Fore, Style
@@ -69,6 +67,7 @@ def retFromGenerate(photoGalery):
     generateFunctions = {
         '1': GenerateGall,
         '2': MakeGallCol,
+        '3': EffectChoosePic,
     }
 
     print(Style.BRIGHT + "\nChoose one")
@@ -78,11 +77,13 @@ def retFromGenerate(photoGalery):
         [Fore.BLUE + Style.BRIGHT + "'2'" + Style.RESET_ALL,
          Style.BRIGHT + "Create a collage out of photos from the gallery"],
         [Fore.BLUE + Style.BRIGHT + "'3'" + Style.RESET_ALL,
+         Style.BRIGHT + "Add an effect to a photo from the gallery"],
+        [Fore.BLUE + Style.BRIGHT + "'4'" + Style.RESET_ALL,
          Style.BRIGHT + "Return to main menu screen" + Style.RESET_ALL],
     ]
     print(tabulate(menuItems2, headers=["Option", "Description"]))
     ans = input()
-    if ans != '3':
+    if ans != '4':
         try:
             newphotoGalery = generateFunctions[ans](photoGalery)
         except invalidInputError as e:
@@ -106,9 +107,7 @@ def GenerateLight(gall):
 
     for i, photID in enumerate(reversed(photsIDs[-3:])):
         phot = photos.getPhotoWithID(photID)
-        image = requests.get(phot.getContents("small"))
-        imageData = image.content
-        im = Image.open(BytesIO(imageData))
+        im = phot.getImageForm("small")
         im.show()
 
         print(Style.BRIGHT + "Do you want to add this picture to this gallery? ('Y'-yes 'N'-no)")
@@ -139,9 +138,7 @@ def Generate(gall):
 
     for i, photID in enumerate(reversed(photsIDs[-3:])):
         phot = photos.getPhotoWithID(photID)
-        image = requests.get(phot.getContents("small"))
-        imageData = image.content
-        im = Image.open(BytesIO(imageData))
+        im = phot.getImageForm("small")
         im.show()
 
         print(Style.BRIGHT + "Do you want to add this picture to this gallery? ('Y'-yes 'N'-no)")
@@ -184,15 +181,61 @@ def MakeGallCol(gall):
     gall.makeCollage(indx)
 
 
-def AddEffect():
-    pass
+def EffectChoosePic(gall):
+    print(Style.BRIGHT + "Write the number of the picture you want to add an effect")
+    ans = int(input())
+    try:
+        MakeEffect(gall._pictures[ans])
+    except invalidInputError:
+        raise invalidInputError()
+
+
+def picForEfect():
+    print(Style.BRIGHT + "Give the path to the picture you want to add an effect")
+    file = input()
+    name, ext = os.path.splitext(os.path.basename(file))
+    pic = photos.getPhotoWithID(name)
+    MakeEffect(pic)
+
+
+def MakeEffect(pic):
+    effects = {
+        '1': 'blur',
+        '2': 'gaussian blur',
+        '3': 'sharpen',
+        '4': 'smooth',
+        '5': 'flip'
+    }
+
+    print("\nChoose one of the effects below:")
+    effectItems = [
+        [Fore.BLUE + Style.BRIGHT + "'1'" + Style.RESET_ALL,
+         Style.BRIGHT + "Blurring the image"],
+        [Fore.BLUE + Style.BRIGHT + "'2'" + Style.RESET_ALL,
+         Style.BRIGHT +
+         "Gaussian blurring the image (In the shape of a circle)"],
+        [Fore.BLUE + Style.BRIGHT + "'3'" + Style.RESET_ALL,
+         Style.BRIGHT + "Sharpening the image" + Style.RESET_ALL],
+        [Fore.BLUE + Style.BRIGHT + "'4'" + Style.RESET_ALL,
+         Style.BRIGHT + "Smoothing the image" + Style.RESET_ALL],
+        [Fore.BLUE + Style.BRIGHT + "'5'" + Style.RESET_ALL,
+         Style.BRIGHT + "Flipping the image in different directions"
+         + Style.RESET_ALL],
+    ]
+    print(tabulate(effectItems, headers=["Option", "Description"]))
+    ans = input()
+    try:
+        newpic = pic.effect(effects[ans])
+    except invalidInputError:
+        raise invalidInputError()
+    newpic.show()
 
 
 functions = {
     '1': GenerateGall,
     '2': OpenGall,
     '3': MakeGallCol,
-    '4': AddEffect
+    '4': picForEfect
 }
 
 
