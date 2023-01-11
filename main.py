@@ -5,6 +5,7 @@ import requests
 import photos
 from tabulate import tabulate
 from colorama import Fore, Style
+import os
 
 
 class invalidInputError(Exception):
@@ -42,7 +43,7 @@ def printMenu():
     print(tabulate(menuItems, headers=["Option", "Description"]))
 
 
-def GenerateNewGall(gall=None):
+def GenerateGall(gall=None):
     generateFunctions = {
         '1': GenerateLight,
         '2': Generate,
@@ -66,11 +67,11 @@ def GenerateNewGall(gall=None):
 
 def retFromGenerate(photoGalery):
     generateFunctions = {
-        '1': GenerateNewGall,
+        '1': GenerateGall,
         '2': MakeGallCol,
     }
 
-    print(Style.BRIGHT + "\nChoose what you want to do next")
+    print(Style.BRIGHT + "\nChoose one")
     menuItems2 = [
         [Fore.BLUE + Style.BRIGHT + "'1'" + Style.RESET_ALL,
          Style.BRIGHT + "Generate more photos to this gallery"],
@@ -87,18 +88,20 @@ def retFromGenerate(photoGalery):
         except invalidInputError as e:
             raise e("Invalid input")
     else:
-        printMenu()
+        main()
 
 
 def GenerateLight(gall):
-    print(Style.BRIGHT + "\nAfter each picture there will be a question if you want to add it to the gallery or not")
-    print(Style.BRIGHT + "Give a theme for the photos (for example: 'person', 'city', 'water' etc.)")
     if not gall:
+        print(Style.BRIGHT + "\nGive a path for the gallery")
+        path = input()
+        print(Style.BRIGHT + "\nGive a theme for the photos (for example: 'person', 'city', 'water' etc.)")
         theme = input()
-        thisGallery = Gallery([], theme)
+        thisGallery = Gallery([], theme, path)
     else:
         thisGallery = gall
         theme = thisGallery.title
+    print("\nAfter each picture there will be a question if you want to add it to the gallery or not")
     simValues, photsIDs = photos.getPhotoWithTopicLight(theme)
 
     for i, photID in enumerate(reversed(photsIDs[-3:])):
@@ -122,14 +125,16 @@ def GenerateLight(gall):
 
 
 def Generate(gall):
-    print(Style.BRIGHT + "\nAfter each picture there will be a question if you want to add it to the gallery or not")
-    print(Style.BRIGHT + "Give a theme for the photos (for example: 'person', 'city', 'water' etc.)")
     if not gall:
+        print(Style.BRIGHT + "\nGive a path for the gallery")
+        path = input()
+        print(Style.BRIGHT + "\nGive a theme for the photos (for example: 'person', 'city', 'water' etc.)")
         theme = input()
-        thisGallery = Gallery([], theme)
+        thisGallery = Gallery([], theme, path)
     else:
         thisGallery = gall
         theme = thisGallery.title
+    print("\nAfter each picture there will be a question if you want to add it to the gallery or not")
     simValues, photsIDs = photos.getPhotoWithTopic(theme)
 
     for i, photID in enumerate(reversed(photsIDs[-3:])):
@@ -152,8 +157,23 @@ def Generate(gall):
     return thisGallery
 
 
-def OpenGall(gall):
-    pass
+def OpenGall():
+    print(Style.BRIGHT + "Give the path for the gallery you want to open")
+    path = input()
+    pictures = []
+    try:
+        title = os.path.basename(path)
+    except FileNotFoundError:
+        raise FileNotFoundError("The gallery path is invalid")
+
+    for file in os.listdir(path):
+        if not file.endswith('.jpg'):
+            continue
+        name, ext = os.path.splitext(os.path.basename(file))
+        pictures.append(photos.getPhotoWithID(name))
+
+    thisGallery = Gallery(pictures, title)
+    retFromGenerate(thisGallery)
 
 
 def MakeGallCol(gall):
@@ -169,7 +189,7 @@ def AddEffect():
 
 
 functions = {
-    '1': GenerateNewGall,
+    '1': GenerateGall,
     '2': OpenGall,
     '3': MakeGallCol,
     '4': AddEffect

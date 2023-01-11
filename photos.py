@@ -4,6 +4,8 @@ from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 import nltk
 import re
+from io import BytesIO
+from PIL import Image
 nltk.download('wordnet')
 
 
@@ -209,8 +211,12 @@ class Photo:
         tagsPreview = [tag['title'] for tag in self._data['tags_preview']]
         return tagsPreview
 
-    def savePhoto(self, path):
-        pass
+    def savePhoto(self, gallery):
+        image = requests.get(self.getContents("full"))
+        imageData = image.content
+        im = Image.open(BytesIO(imageData))
+
+        im.save(f'{gallery.path}{gallery.title}/{self.id}.jpg')
 
     def effect(self, effect):
         pass
@@ -246,10 +252,3 @@ def checker(data):
             raise TypeError("The contents must be strings")
 
     return True
-
-
-if __name__ == "__main__":
-    simValues, photsIDs = getPhotoWithTopicLight("nature")
-    for i, photID in enumerate(photsIDs):
-        phot = getPhotoWithID(photID)
-        print(f"{phot.tags_preview[0]}: {simValues[i]}")

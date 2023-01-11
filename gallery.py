@@ -34,13 +34,12 @@ class Gallery():
             raise TypeError("The title must be a string")
         self._title = title
         if self._path != "":
-            path = f'{self._path}/'
-        os.makedirs(f'{self._path}{self._title}', exist_ok=True)
+            newpath = f'{self._path}/'
+        os.makedirs(f'{newpath}{self._title}', exist_ok=True)
         for picture in pictures:
             if type(picture) != photos.Photo:
                 raise TypeError("The type must be 'Photos'")
             self._pictures.append(picture)
-
 
     @property
     def title(self):
@@ -116,8 +115,4 @@ class Gallery():
 
     def saveGallery(self):
         for i, pic in enumerate(self._pictures):
-            image = requests.get(pic.getContents("full"))
-            imageData = image.content
-            im = Image.open(BytesIO(imageData))
-
-            im.save(f'{self._path}{self.title}/picture{i}.jpg')
+            pic.savePhoto(self)
