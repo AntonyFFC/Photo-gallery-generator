@@ -55,7 +55,7 @@ def getPhotoWithTopic(topic):
     MatchPhotID = []
     similarVals = []
     laps = 0
-    while len(MatchPhotID) < 5 and laps <= 12:
+    while len(MatchPhotID) < 5 and laps <= 10:
         laps += 1
         phots = getPhotos(laps+randint(0, 500), 30)
         for photo in phots:
@@ -75,7 +75,7 @@ def getPhotoWithTopicLight(topic):
     MatchPhotID = []
     similarVals = []
     laps = 0
-    while len(MatchPhotID) < 5 and laps <= 12:
+    while len(MatchPhotID) < 7 and laps <= 12:
         laps += 1
         phots = getPhotos(laps+randint(0, 500), 30)
         for photo in phots:
@@ -109,7 +109,7 @@ def checkIfSynonym(input, givenTheme):
     if not givenThemeSynonyms:
         for tag in tags:
             if tag.lower() == givenTheme.lower():
-                return True, 0.9
+                return True, 0.95
         return False, 0
 
     for tag in tags:
@@ -123,7 +123,7 @@ def checkIfSynonym(input, givenTheme):
             givenLemmatized = lemmatizer.lemmatize(givenTheme.lower(), pos=categ)
             tagLemmatized = lemmatizer.lemmatize(tag, pos=categ)
             if givenLemmatized == tagLemmatized:
-                return True, 0.8
+                return True, 0.9
     return False, 0
 
 

@@ -110,6 +110,7 @@ def GenerateLight(gall):
         im = phot.getImageForm("small")
         im.show()
 
+        print(simValues[i])
         print(Style.BRIGHT + "Do you want to add this picture to this gallery? ('Y'-yes 'N'-no)")
         ans = input()
         if ans.lower() == 'n':
@@ -118,8 +119,8 @@ def GenerateLight(gall):
             thisGallery.addPict(phot)
         else:
             raise invalidInputError()
-    if not gall:
-        thisGallery.saveGallery()
+
+    thisGallery.saveGallery()
     return thisGallery
 
 
@@ -149,8 +150,8 @@ def Generate(gall):
             thisGallery.addPict(phot)
         else:
             raise invalidInputError()
-    if not gall:
-        thisGallery.saveGallery()
+
+    thisGallery.saveGallery()
     return thisGallery
 
 
@@ -177,15 +178,19 @@ def MakeGallCol(gall):
     print(Style.BRIGHT + "Write the numbers of the pictures you want to use in the collage, max 9 pictures")
     print("Write in the numbers devided by commas ex. 1, 3, 5")
     ans = input()
-    indx = [int(item) for item in ans.split(',')]
-    gall.makeCollage(indx)
+    try:
+        indx = [int(item) for item in ans.split(',')]
+        col = gall.makeCollage(indx)
+    except invalidInputError:
+        raise invalidInputError()
+    col.show()
 
 
 def EffectChoosePic(gall):
     print(Style.BRIGHT + "Write the number of the picture you want to add an effect")
     ans = int(input())
     try:
-        MakeEffect(gall._pictures[ans])
+        MakeEffect(gall._pictures[ans], gall)
     except invalidInputError:
         raise invalidInputError()
 
@@ -198,7 +203,7 @@ def picForEfect():
     MakeEffect(pic)
 
 
-def MakeEffect(pic):
+def MakeEffect(pic, gall=None):
     effects = {
         '1': 'blur',
         '2': 'gaussian blur',
@@ -229,6 +234,10 @@ def MakeEffect(pic):
     except invalidInputError:
         raise invalidInputError()
     newpic.show()
+    if gall:
+        newpic.save(f'{gall._path}{gall.title}/{effects[ans]}{pic.id}.jpg')
+    else:
+        newpic.save(f'{effects[ans]}{pic.id}.jpg')
 
 
 functions = {

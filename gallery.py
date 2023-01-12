@@ -66,6 +66,7 @@ class Gallery():
         for i, picture in enumerate(self._pictures):
             if picture.id == picID:
                 del self._pictures[i]
+                return
         raise IDNotFoundError()
 
     def getPict(self, picID):
@@ -112,6 +113,7 @@ class Gallery():
                 im = Image.open(BytesIO(imageData))
                 collage.paste(im, (x*boxWidth, y*boxHeight))
         collage.save(f'{self._path}{self.title}/collage.jpg')
+        return collage
 
     def saveGallery(self):
         for i, pic in enumerate(self._pictures):
