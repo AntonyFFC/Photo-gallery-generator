@@ -6,18 +6,25 @@ Generator fotogalerii
 ## Description
 Program generuje fotogalerie o temacie zadanym przez użytkownika. Dodatkowo może on tworzyć kolaż ze zdjęć z fotogalerii oraz nakładać 5 różnych effektów na zdjęcia.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
 ## Visuals
 Plan przejść przez ekrany interfejsu:
     ![Plan przejść przez ekrany interfacu](Plan_Projektu.jpg "Plan_Projektu")
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Aby włączyć należy odpalić poprostu plik o nazwie main.py. Trzeba mieć wcześniej zainstalowane te biblioteki: tabulate, colorama, pillow, i ntlk (reszta to podstawowe) Poniżej pokazane krok po kroku odpalenie programu.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Tutaj podaje przykład stworzenia forogalerii w krokach i później zrobienia z niej kolaż zdjęć, oraz położenia efektu na zdjęcie:
+
+1. ![Punkt 1](proj1.jpg "Wybranie generowania galerii")
+2. ![Punkt 2](proj2.jpg "Wybranie galerii ścieżki docelowej ")
+3. ![Punkt 3](proj3.jpg "Wybranie tematu galerii")
+4. ![Punkt 4](proj4.jpg "Jedno z wygenerowanch zdjęć")
+5. ![Punkt 5](proj5.jpg "Wybranie zrobienia kolażu oraz wybór zdjęć")
+6. ![Punkt 6](proj6.jpg "Wygenerowany kolaż")
+7. ![Punkt 7](proj7.jpg "Wybranie nadania efektu")
+8. ![Punkt 8](proj8.jpg "Wybranie zdjęcia oraz efektu")
+9. ![Punkt 9](proj9.jpg "Wygenerowany efekt")
 
 ## Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
