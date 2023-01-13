@@ -1,11 +1,6 @@
-from gallery import Gallery, InvalidPicValueError
+from gallery import Gallery
 import pytest
-from photos import Photo, getPhotos, getPhotoWithID
-import os
-from PIL import Image
-from io import BytesIO
-import requests
-import pytest
+from photos import Photo
 
 
 def photo():
@@ -44,7 +39,6 @@ def photoSecond():
         }
     }
     return Photo(data)
-
 
 
 @pytest.fixture
@@ -88,7 +82,7 @@ def test_getPict(testGallery):
 
 def test_initTypeError(testPictures):
     with pytest.raises(TypeError):
-        pics= testPictures
+        pics = testPictures
         Gallery(pics, 5, "test/path")
 
 
@@ -107,5 +101,3 @@ def test_rmvPictTypeError(testGallery):
 def test_getPictTypeError(testGallery):
     with pytest.raises(TypeError):
         testGallery.getPict(123)
-
-

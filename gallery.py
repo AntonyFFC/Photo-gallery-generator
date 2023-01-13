@@ -55,12 +55,14 @@ class Gallery():
         return self._path
 
     def addPict(self, picture):
+        """Adds an image from the gallery with the given ID"""
         try:
             self._pictures.append(picture)
         except Exception as e:
             e("Addition not possible")
 
     def rmvPict(self, picID):
+        """Removes an image from the gallery with the given ID"""
         if not isinstance(picID, str):
             raise TypeError("ID must be a string")
         for i, picture in enumerate(self._pictures):
@@ -70,6 +72,7 @@ class Gallery():
         raise IDNotFoundError()
 
     def getPict(self, picID):
+        """Returns an image from the gallery with the given ID"""
         if not isinstance(picID, str):
             raise TypeError("ID must be a string")
         for i, picture in enumerate(self._pictures):
@@ -116,5 +119,6 @@ class Gallery():
         return collage
 
     def saveGallery(self):
+        """Saves each photo of the gallery into a folder of the photogallery"""
         for i, pic in enumerate(self._pictures):
             pic.savePhoto(self)

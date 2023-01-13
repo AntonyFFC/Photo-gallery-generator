@@ -1,4 +1,3 @@
-from PIL import Image
 from gallery import Gallery
 import photos
 from tabulate import tabulate
@@ -32,10 +31,7 @@ def printMenu():
         [Fore.BLUE + Style.BRIGHT + "'2'" + Style.RESET_ALL,
          Style.BRIGHT + "Open an existing photogallery" + Style.RESET_ALL],
         [Fore.BLUE + Style.BRIGHT + "'3'" + Style.RESET_ALL,
-         Style.BRIGHT + "Make a collage out of photos from a photogallery"
-         + Style.RESET_ALL],
-        [Fore.BLUE + Style.BRIGHT + "'4'" + Style.RESET_ALL,
-         Style.BRIGHT + "Add an effect to a photo from a photogallery"
+         Style.BRIGHT + "Add an effect to an existing photo"
          + Style.RESET_ALL],
     ]
     print(tabulate(menuItems, headers=["Option", "Description"]))
@@ -176,7 +172,7 @@ def OpenGall():
 
 def MakeGallCol(gall):
     print(Style.BRIGHT + "Write the numbers of the pictures you want to use in the collage, max 9 pictures")
-    print("Write in the numbers devided by commas ex. 1, 3, 5")
+    print("Write in the numbers devided by commas ex. 0, 1, 3")
     ans = input()
     try:
         indx = [int(item) for item in ans.split(',')]
@@ -184,6 +180,7 @@ def MakeGallCol(gall):
     except invalidInputError:
         raise invalidInputError()
     col.show()
+    retFromGenerate(gall)
 
 
 def EffectChoosePic(gall):
@@ -193,6 +190,7 @@ def EffectChoosePic(gall):
         MakeEffect(gall._pictures[ans], gall)
     except invalidInputError:
         raise invalidInputError()
+    retFromGenerate(gall)
 
 
 def picForEfect():
@@ -201,12 +199,13 @@ def picForEfect():
     name, ext = os.path.splitext(os.path.basename(file))
     pic = photos.getPhotoWithID(name)
     MakeEffect(pic)
+    main()
 
 
 def MakeEffect(pic, gall=None):
     effects = {
         '1': 'blur',
-        '2': 'gaussian blur',
+        '2': 'contour',
         '3': 'sharpen',
         '4': 'smooth',
         '5': 'flip'
@@ -218,7 +217,7 @@ def MakeEffect(pic, gall=None):
          Style.BRIGHT + "Blurring the image"],
         [Fore.BLUE + Style.BRIGHT + "'2'" + Style.RESET_ALL,
          Style.BRIGHT +
-         "Gaussian blurring the image (In the shape of a circle)"],
+         "Add a black and white contour to objects in the image"],
         [Fore.BLUE + Style.BRIGHT + "'3'" + Style.RESET_ALL,
          Style.BRIGHT + "Sharpening the image" + Style.RESET_ALL],
         [Fore.BLUE + Style.BRIGHT + "'4'" + Style.RESET_ALL,
@@ -235,16 +234,15 @@ def MakeEffect(pic, gall=None):
         raise invalidInputError()
     newpic.show()
     if gall:
-        newpic.save(f'{gall._path}{gall.title}/{effects[ans]}{pic.id}.jpg')
+        newpic.save(f'{gall.path}{gall.title}/{effects[ans]}@{pic.id}.jpg')
     else:
-        newpic.save(f'{effects[ans]}{pic.id}.jpg')
+        newpic.save(f'{effects[ans]}@{pic.id}.jpg')
 
 
 functions = {
     '1': GenerateGall,
     '2': OpenGall,
-    '3': MakeGallCol,
-    '4': picForEfect
+    '3': picForEfect
 }
 
 

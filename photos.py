@@ -32,6 +32,7 @@ class WrongCategoryError(Exception):
 
 
 def getPhotos(page=1, per_page=10):
+    """Returns the given number and page of the unsplash API pictures"""
     try:
         imagesData = requests.get(f"https://api.unsplash.com/photos/?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0&page={page}&per_page={per_page}").json()
     except:
@@ -44,6 +45,7 @@ def getPhotos(page=1, per_page=10):
 
 
 def getPhotoWithID(id):
+    """Returns the Photo with the given ID from the unsplash API"""
     try:
         imageData = requests.get(f"https://api.unsplash.com/photos/{id}?client_id=74i4_wzXS1aC5JPj89c6p7gfVPo1GBlXwVtapdLtvE0").json()
     except:
@@ -52,6 +54,11 @@ def getPhotoWithID(id):
 
 
 def getPhotoWithTopic(topic):
+    """
+    Looks for photos with similar meaning of words in its tags_preview
+    This is mor precise becouse every photo has a tags_preview, which are
+    a precise description of what is on the picture
+    """
     MatchPhotID = []
     similarVals = []
     laps = 0
@@ -72,6 +79,11 @@ def getPhotoWithTopic(topic):
 
 
 def getPhotoWithTopicLight(topic):
+    """
+    Looks for photos with similar meaning of words in its description
+    This is less precise becouse many photos do not have a description,
+    or the description can be very short and impractical
+    """
     MatchPhotID = []
     similarVals = []
     laps = 0
@@ -96,6 +108,9 @@ def getPhotoWithTopicLight(topic):
 
 
 def checkIfSynonym(input, givenTheme):
+    """
+    Checks using 3 different methods if the two words are similar or identical
+    """
     lemmatizer = WordNetLemmatizer()
     givenThemeSynonyms = wordnet.synsets(givenTheme)
     categories = ['n', 'v', 'a', 'r', 's']
@@ -147,22 +162,32 @@ class Photo:
 
     :param alt_description: Photos' alternative description
     :type name: str
+
+    :param tags: Photos' tags
+    :type name: str
+
+    :param preview_tags: Photos' preview tags
+    :type name: str
     """
     def __init__(self, data):
         if checker(data):
             self._data = data
 
     def getData(self):
+        """returns the photos' JSON data"""
         return self._data
 
     def _get(self, key):
+        """returns the given key of the photo"""
         return self._data.get(key)
 
     @property
     def id(self):
+        """returns the photos' ID"""
         return self._data['id']
 
     def setID(self, newID):
+        """sets the photos' ID"""
         if type(newID) == str:
             self._data['id'] = newID
         else:
@@ -170,13 +195,16 @@ class Photo:
 
     @property
     def dimensions(self):
+        """returns the photos' dimensions in the form of a tuple"""
         return self._data['width'], self._data['height']
 
     @property
     def likes(self):
+        """returns the photos' number of likes"""
         return self._data['likes']
 
     def setLikes(self, newLikes):
+        """sets the photos' number of likes"""
         if isinstance(newLikes, int):
             if newLikes >= 0:
                 self._data['likes'] = newLikes
@@ -187,43 +215,52 @@ class Photo:
 
     @property
     def description(self):
+        """returns the description of the photo"""
         return self._data['description']
 
     @property
     def alt_description(self):
+        """returns the alt_description of the photo"""
         return self._data['alt_description']
 
     def setDescription(self, newDescription):
+        """Sets the description of the photo"""
         if not isinstance(newDescription, str):
             raise TypeError("Description Must be a string")
         self._data['description'] = newDescription
 
     def setAltDescription(self, newDescription):
+        """Sets the alt_description of the photo"""
         if not isinstance(newDescription, str):
             raise TypeError("Description Must be a string")
         self._data['alt_description'] = newDescription
 
     def getContents(self, category):
+        """Returns an url of the photo"""
         if category not in ['raw', 'full', 'regular', 'small', 'thumb']:
             raise WrongCategoryError()
         return self._data["urls"][category]
 
     @property
     def tags(self):
+        """Returns the tags of the photo"""
         tags = [tag['title'] for tag in self._data['tags']]
         return tags
 
     @property
     def tags_preview(self):
+        """Returns the tags_preview of the photo"""
         tagsPreview = [tag['title'] for tag in self._data['tags_preview']]
         return tagsPreview
 
     def savePhoto(self, gallery):
+        """Saves the photo"""
         im = self.getImageForm("full")
 
         im.save(f'{gallery.path}{gallery.title}/{self.id}.jpg')
 
     def getImageForm(self, category):
+        """Returns a Image form of the picture (for easier modifications with PIL)"""
         image = requests.get(self.getContents(category))
         imageData = image.content
         return Image.open(BytesIO(imageData))
@@ -232,14 +269,14 @@ class Photo:
         """
         Makes the chosen effect on the photo.
         The possible effects are:
-        'blur', 'gaussian blur', 'sharpen', 'smooth' and 'flip'
+        'blur', 'gaussian blur', 'sharpen', 'smooth', contour and 'flip'
         """
         pic = self.getImageForm('full')
         effectFunctions = {
-            'blur': ImageFilter.BLUR,
-            'gaussian blur': ImageFilter.GaussianBlur(radius=2),
+            'blur': ImageFilter.GaussianBlur(radius=10),
             'sharpen': ImageFilter.SHARPEN,
-            'smooth': ImageFilter.SMOOTH,
+            'smooth': ImageFilter.SMOOTH_MORE,
+            'contour': ImageFilter.CONTOUR
         }
         try:
             if effect == 'flip':
@@ -250,6 +287,7 @@ class Photo:
             raise invalidInputError("Invalid input")
 
     def flip(self):
+        """This function is responsible for executing the flipping process"""
         pic = self.getImageForm('full')
         print(Style.BRIGHT + "\nChoose one:")
         flipItems = [
@@ -268,6 +306,9 @@ class Photo:
 
 
 def checker(data):
+    """
+    Verifies if the data can be transformed into a Picture object
+    """
     if not data:
         raise NoDataError()
     if not isinstance(data, dict):
