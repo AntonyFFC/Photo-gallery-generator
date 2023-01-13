@@ -161,7 +161,7 @@ def OpenGall():
         raise FileNotFoundError("The gallery path is invalid")
 
     for file in os.listdir(path):
-        if not file.endswith('.jpg'):
+        if not file.endswith('.jpg') or file.startswith('collage'):
             continue
         name, ext = os.path.splitext(os.path.basename(file))
         pictures.append(photos.getPhotoWithID(name))
