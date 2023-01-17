@@ -20,7 +20,7 @@ Tutaj podaje przykład stworzenia forogalerii w krokach i później zrobienia z 
 2. W tym kroku istotne jest aby wybrać pierwszą opcję do generowania galerii, ponieważ ta druga często zużywa wszystkie requesty i nie można dalej korzystać z programu. Jest ona jedynia przezemnie zostawiona w przypadku posiadania ulepszonego konta.
 ![Punkt 2](proj2.jpg "Wybranie galerii ścieżki docelowej ")
 3. ![Punkt 3](proj3.jpg "Wybranie tematu galerii")
-4. ![Punkt 4](proj4.jpg "Jedno z wygenerowanch zdjęć")sssssssssssssssssssssssssssss
+4. ![Punkt 4](proj4.jpg "Jedno z wygenerowanch zdjęć")
 5. ![Punkt 5](proj5.jpg "Wybranie zrobienia kolażu oraz wybór zdjęć")
 6. ![Punkt 6](proj6.jpg "Wygenerowany kolaż")
 7. ![Punkt 7](proj7.jpg "Wybranie nadania efektu")
