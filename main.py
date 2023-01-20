@@ -20,6 +20,7 @@ def main():
 
 
 def printMenu():
+    """This is the first menu screen"""
     DescriptionTxt = """
     Welcome to the PhotoGallery Generator
     Choose your action by typing one of the options below:
@@ -38,6 +39,7 @@ def printMenu():
 
 
 def GenerateGall(gall=None):
+    """This menu screen is responsible for chosing the generation of gallery"""
     generateFunctions = {
         '1': GenerateLight,
         '2': Generate,
@@ -60,6 +62,7 @@ def GenerateGall(gall=None):
 
 
 def retFromGenerate(photoGalery):
+    """This is the menu screen which appears after a gallery is created or opened"""
     generateFunctions = {
         '1': GenerateGall,
         '2': MakeGallCol,
@@ -89,6 +92,7 @@ def retFromGenerate(photoGalery):
 
 
 def GenerateLight(gall):
+    """This menu screen is responsible for generating a gallery using the Light option"""
     if not gall:
         print(Style.BRIGHT + "\nGive a path for the gallery")
         path = input()
@@ -121,6 +125,7 @@ def GenerateLight(gall):
 
 
 def Generate(gall):
+    """This menu screen is responsible for generating a gallery using the normal option"""
     if not gall:
         print(Style.BRIGHT + "\nGive a path for the gallery")
         path = input()
@@ -152,6 +157,7 @@ def Generate(gall):
 
 
 def OpenGall():
+    """This menu screen is responsible for oopening a gallery"""
     print(Style.BRIGHT + "Give the path for the gallery you want to open")
     path = input()
     pictures = []
@@ -171,6 +177,7 @@ def OpenGall():
 
 
 def MakeGallCol(gall):
+    """This menu screen is responsible for creating a collage"""
     print(Style.BRIGHT + "Write the numbers of the pictures you want to use in the collage, max 9 pictures")
     print("Write in the numbers devided by commas ex. 0, 1, 3")
     ans = input()
@@ -184,6 +191,7 @@ def MakeGallCol(gall):
 
 
 def EffectChoosePic(gall):
+    """This menu screen is responsible for choosing a photo from a gallery for an effect"""
     print(Style.BRIGHT + "Write the number of the picture you want to add an effect")
     ans = int(input())
     try:
@@ -194,6 +202,7 @@ def EffectChoosePic(gall):
 
 
 def picForEfect():
+    """This menu screen is responsible for choosing a photo from a given path for an effect"""
     print(Style.BRIGHT + "Give the path to the picture you want to add an effect")
     file = input()
     name, ext = os.path.splitext(os.path.basename(file))
@@ -203,6 +212,7 @@ def picForEfect():
 
 
 def MakeEffect(pic, gall=None):
+    """This menu screen is responsible for adding an effect to a photo"""
     effects = {
         '1': 'blur',
         '2': 'contour',
